@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PDF Autofiller</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>AI PDF Autofiller</h1>
+            <p>Upload your form, paste your data, and let AI handle the rest.</p>
+        </header>
+
+        <main>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Main Upload Form -->
+            <div class="glass-panel" id="upload-panel">
+                <form action="/" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="pdf_file" class="upload-label">
+                            <span class="icon">📄</span>
+                            <span class="text">Upload PDF Form</span>
+                            <input type="file" name="pdf_file" id="pdf_file" accept=".pdf" required
+                                onchange="this.form.submit()">
+                            <div class="file-name" id="file-name">Click to select file</div>
+                        </label>
+                    </div>
+                    <p class="hint">File will be processed immediately using your saved profile.</p>
+                </form>
+
+                <div class="actions">
+                    <button class="btn-secondary" onclick="toggleProfile()">
+                        Edit My Profile
+                    </button>
+                </div>
+            </div>
+
+            <!-- Profile Editor (Hidden by default) -->
+            <div class="glass-panel" id="profile-panel" style="display: none;">
+                <h2>My Profile Data</h2>
+                <form action="/" method="post">
+                    <input type="hidden" name="save_profile" value="true">
+                    <div class="form-group">
+                        <label for="json_data">JSON Data</label>
+                        <textarea name="json_data" id="json_data" required>{{ profile_json }}</textarea>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Save Profile</button>
+                        <button type="button" class="btn-secondary" onclick="toggleProfile()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by Local AI • Secure & Private</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleProfile() {
+            const uploadPanel = document.getElementById('upload-panel');
+            const profilePanel = document.getElementById('profile-panel');
+
+            if (uploadPanel.style.display === 'none') {
+                uploadPanel.style.display = 'block';
+                profilePanel.style.display = 'none';
+            } else {
+                uploadPanel.style.display = 'none';
+                profilePanel.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+pytesseract
+pdf2image
+pymupdf
+Pillow
+flask
+werkzeug
