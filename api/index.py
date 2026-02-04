@@ -20,8 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ============ Delivery Receipt Filler Logic ============
 
 TABLE_ROWS = [
-    {'y_start': 276.9, 'y_end': 289.2},
-    {'y_start': 300.8, 'y_end': 313.1},
+    {'y_start': 276.9, 'y_end': 289.2},  # Row 1
+    {'y_start': 300.8, 'y_end': 313.1},  # Row 2
+    {'y_start': 324.7, 'y_end': 337.0},  # Row 3
+    {'y_start': 348.6, 'y_end': 360.9},  # Row 4
+    {'y_start': 372.5, 'y_end': 384.8},  # Row 5
 ]
 
 TABLE_COLUMNS = {
@@ -62,7 +65,7 @@ def fill_delivery_receipt(data, template_path):
     date_bottom_rect = fitz.Rect(72, 522, 220, 540)
     cover_and_write(date_bottom_rect, f" ______{data['date']}_______ ")
     
-    for i, item in enumerate(data['items'][:2]):
+    for i, item in enumerate(data['items'][:5]):  # Max 5 items
         row = TABLE_ROWS[i]
         y_top = row['y_start'] - 2
         y_bottom = row['y_end'] + 2
@@ -192,6 +195,45 @@ HTML_TEMPLATE = '''
                     <input type="text" name="item2_remarks" value="No issues" placeholder="Remarks">
                 </div>
             </div>
+
+            <div class="item-row">
+                <label>Item 3 (Optional)</label>
+                <div class="form-group">
+                    <input type="text" name="item3_description" placeholder="Description">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="item3_quantity" placeholder="Quantity">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="item3_remarks" value="No issues" placeholder="Remarks">
+                </div>
+            </div>
+
+            <div class="item-row">
+                <label>Item 4 (Optional)</label>
+                <div class="form-group">
+                    <input type="text" name="item4_description" placeholder="Description">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="item4_quantity" placeholder="Quantity">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="item4_remarks" value="No issues" placeholder="Remarks">
+                </div>
+            </div>
+
+            <div class="item-row">
+                <label>Item 5 (Optional)</label>
+                <div class="form-group">
+                    <input type="text" name="item5_description" placeholder="Description">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="item5_quantity" placeholder="Quantity">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="item5_remarks" value="No issues" placeholder="Remarks">
+                </div>
+            </div>
         </div>
 
         <button type="submit" class="btn-primary">Generate Receipt</button>
@@ -230,21 +272,14 @@ def delivery_receipt():
                 return render_template_string(HTML_TEMPLATE, today=today, error='Please enter a delivery location.')
             
             items = []
-            item1_desc = request.form.get('item1_description', '').strip()
-            if item1_desc:
-                items.append({
-                    'description': item1_desc,
-                    'quantity': request.form.get('item1_quantity', '1 unit').strip() or '1 unit',
-                    'remarks': request.form.get('item1_remarks', 'No issues').strip() or 'No issues'
-                })
-            
-            item2_desc = request.form.get('item2_description', '').strip()
-            if item2_desc:
-                items.append({
-                    'description': item2_desc,
-                    'quantity': request.form.get('item2_quantity', '1 unit').strip() or '1 unit',
-                    'remarks': request.form.get('item2_remarks', 'No issues').strip() or 'No issues'
-                })
+            for i in range(1, 6):
+                desc = request.form.get(f'item{i}_description', '').strip()
+                if desc:
+                    items.append({
+                        'description': desc,
+                        'quantity': request.form.get(f'item{i}_quantity', '1 unit').strip() or '1 unit',
+                        'remarks': request.form.get(f'item{i}_remarks', 'No issues').strip() or 'No issues'
+                    })
             
             if not items:
                 return render_template_string(HTML_TEMPLATE, today=today, error='Please add at least one item.')

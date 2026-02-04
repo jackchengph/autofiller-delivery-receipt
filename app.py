@@ -34,6 +34,9 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 TABLE_ROWS = [
     {'y_start': 276.9, 'y_end': 289.2},  # Row 1
     {'y_start': 300.8, 'y_end': 313.1},  # Row 2
+    {'y_start': 324.7, 'y_end': 337.0},  # Row 3
+    {'y_start': 348.6, 'y_end': 360.9},  # Row 4
+    {'y_start': 372.5, 'y_end': 384.8},  # Row 5
 ]
 
 TABLE_COLUMNS = {
@@ -89,7 +92,7 @@ def fill_delivery_receipt(data, template_path, output_path):
     cover_and_write(date_bottom_rect, date_with_underscores)
     
     # 5. Replace items in the table
-    for i, item in enumerate(data['items'][:2]):  # Max 2 items
+    for i, item in enumerate(data['items'][:5]):  # Max 5 items
         row = TABLE_ROWS[i]
         y_top = row['y_start'] - 2
         y_bottom = row['y_end'] + 2
@@ -162,24 +165,14 @@ def delivery_receipt():
             
             # Get items
             items = []
-            
-            # Item 1
-            item1_desc = request.form.get('item1_description', '').strip()
-            if item1_desc:
-                items.append({
-                    'description': item1_desc,
-                    'quantity': request.form.get('item1_quantity', '1 unit').strip() or '1 unit',
-                    'remarks': request.form.get('item1_remarks', 'No issues').strip() or 'No issues'
-                })
-            
-            # Item 2
-            item2_desc = request.form.get('item2_description', '').strip()
-            if item2_desc:
-                items.append({
-                    'description': item2_desc,
-                    'quantity': request.form.get('item2_quantity', '1 unit').strip() or '1 unit',
-                    'remarks': request.form.get('item2_remarks', 'No issues').strip() or 'No issues'
-                })
+            for i in range(1, 6):
+                desc = request.form.get(f'item{i}_description', '').strip()
+                if desc:
+                    items.append({
+                        'description': desc,
+                        'quantity': request.form.get(f'item{i}_quantity', '1 unit').strip() or '1 unit',
+                        'remarks': request.form.get(f'item{i}_remarks', 'No issues').strip() or 'No issues'
+                    })
             
             if not items:
                 flash('Please add at least one item.', 'error')
