@@ -20,17 +20,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ============ Delivery Receipt Filler Logic ============
 
 TABLE_ROWS = [
-    {'y_start': 282, 'y_end': 305},  # Row 1
-    {'y_start': 307, 'y_end': 329},  # Row 2
-    {'y_start': 331, 'y_end': 353},  # Row 3
-    {'y_start': 355, 'y_end': 377},  # Row 4
-    {'y_start': 379, 'y_end': 401},  # Row 5
+    {'y_start': 275, 'y_end': 309},  # Row 1
+    {'y_start': 309, 'y_end': 343},  # Row 2
+    {'y_start': 343, 'y_end': 377},  # Row 3
+    {'y_start': 377, 'y_end': 411},  # Row 4
+    {'y_start': 411, 'y_end': 445},  # Row 5
 ]
 
 TABLE_COLUMNS = {
-    'item_description': {'x_start': 26, 'x_end': 294},
-    'quantity': {'x_start': 302, 'x_end': 382},
-    'remarks': {'x_start': 392, 'x_end': 568}
+    'item_description': {'x_start': 45, 'x_end': 325},
+    'quantity': {'x_start': 335, 'x_end': 425},
+    'remarks': {'x_start': 435, 'x_end': 615}
 }
 
 
