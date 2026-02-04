@@ -42,8 +42,10 @@ def fill_delivery_receipt(data, template_path):
     
     white = fitz.pdfcolor["white"]
     black = fitz.pdfcolor["black"]
-    font_name = "helv"
+    # Font settings
+    font_name = "helv"  # Helvetica
     base_font_size = 10
+    font = fitz.Font(font_name)
     
     def draw_text_in_rect(rect, text, align="left", font_size=10):
         """Draw text in a rectangle with auto-scaling and alignment."""
@@ -58,12 +60,12 @@ def fill_delivery_receipt(data, template_path):
 
         # 2. Auto-scale font size
         current_font_size = font_size
-        text_width = page.get_text_length(text, fontname=font_name, fontsize=current_font_size)
+        text_width = font.text_length(text, fontsize=current_font_size)
         rect_width = rect.width - 4  # 2px padding on each side
         
         while text_width > rect_width and current_font_size > 6:
             current_font_size -= 0.5
-            text_width = page.get_text_length(text, fontname=font_name, fontsize=current_font_size)
+            text_width = font.text_length(text, fontsize=current_font_size)
             
         # 3. Calculate alignment
         # Vertical center baseline approximation: y_mid + font_size * 0.35
