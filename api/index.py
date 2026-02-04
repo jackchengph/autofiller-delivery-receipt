@@ -104,9 +104,10 @@ def fill_delivery_receipt(data, template_path):
     draw_text_in_rect(location_rect, data['delivery_location'], font_size=16)
     
     # Date (Bottom) - Anchor Y ~648
-    date_bottom_rect = fitz.Rect(140, 671, 310, 691)  # Shifted right to be clearer
-    # For the bottom line, we want to center it over the line
-    draw_text_in_rect(date_bottom_rect, data['date'], align="center", font_size=14)
+    # Move WAY LEFT to sit on the line under "Date:"
+    date_bottom_rect = fitz.Rect(50, 680, 250, 700)
+    # Align left to start near the "Date:" label
+    draw_text_in_rect(date_bottom_rect, data['date'], align="left", font_size=14)
     
     for i in range(5):  # Loop through all 5 possible rows
         row = TABLE_ROWS[i]
