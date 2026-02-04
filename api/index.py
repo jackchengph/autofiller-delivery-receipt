@@ -20,17 +20,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ============ Delivery Receipt Filler Logic ============
 
 TABLE_ROWS = [
-    {'y_start': 282, 'y_end': 306},  # Row 1
-    {'y_start': 306, 'y_end': 330},  # Row 2
-    {'y_start': 330, 'y_end': 354},  # Row 3
-    {'y_start': 354, 'y_end': 378},  # Row 4
-    {'y_start': 378, 'y_end': 402},  # Row 5
+    {'y_start': 282, 'y_end': 305},  # Row 1
+    {'y_start': 307, 'y_end': 329},  # Row 2
+    {'y_start': 331, 'y_end': 353},  # Row 3
+    {'y_start': 355, 'y_end': 377},  # Row 4
+    {'y_start': 379, 'y_end': 401},  # Row 5
 ]
 
 TABLE_COLUMNS = {
-    'item_description': {'x_start': 25, 'x_end': 295},
-    'quantity': {'x_start': 300, 'x_end': 385},
-    'remarks': {'x_start': 390, 'x_end': 570}
+    'item_description': {'x_start': 26, 'x_end': 294},
+    'quantity': {'x_start': 302, 'x_end': 382},
+    'remarks': {'x_start': 392, 'x_end': 568}
 }
 
 
@@ -104,8 +104,9 @@ def fill_delivery_receipt(data, template_path):
     location_rect = fitz.Rect(125, 177, 540, 193)
     draw_text_in_rect(location_rect, data['delivery_location'], font_size=12)
     
-    # Date (Bottom) - Anchor Y ~697-709
-    date_bottom_rect = fitz.Rect(60, 695, 230, 715)
+    # Date (Bottom) - Adjust to cover "12/22/2025" text
+    # The image shows the date line is quite low, near the bottom edge
+    date_bottom_rect = fitz.Rect(60, 715, 230, 735)
     # For the bottom line, we want to center it over the line
     draw_text_in_rect(date_bottom_rect, data['date'], align="center", font_size=12)
     
@@ -124,17 +125,17 @@ def fill_delivery_receipt(data, template_path):
         
         if i < len(data['items']):
             item = data['items'][i]
-            # Description: Let's inset 1px to avoid hitting grid lines
-            draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left", inset=1)
+            # Description: Let's inset more to avoid hitting grid lines
+            draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left", inset=(2, 1))
             # Quantity: Centered
-            draw_text_in_rect(qty_rect, item['quantity'], align="center", inset=1)
+            draw_text_in_rect(qty_rect, item['quantity'], align="center", inset=(2, 1))
             # Remarks: Left aligned
-            draw_text_in_rect(remarks_rect, item['remarks'], align="left", inset=1)
+            draw_text_in_rect(remarks_rect, item['remarks'], align="left", inset=(2, 1))
         else:
             # If no item, clear. Important to inset to keep grid lines.
-            draw_text_in_rect(desc_rect, "", inset=1)
-            draw_text_in_rect(qty_rect, "", inset=1)
-            draw_text_in_rect(remarks_rect, "", inset=1)
+            draw_text_in_rect(desc_rect, "", inset=(2, 1))
+            draw_text_in_rect(qty_rect, "", inset=(2, 1))
+            draw_text_in_rect(remarks_rect, "", inset=(2, 1))
     
     # Save to bytes
     pdf_bytes = doc.tobytes()
