@@ -124,7 +124,6 @@ def fill_delivery_receipt(data, template_path):
                                  TABLE_COLUMNS['remarks']['x_end'], y_bottom)
         
         if i < len(data['items']):
-        if i < len(data['items']):
             item = data['items'][i]
             # Description: Inset x=3, y=4 to definitely avoid grid lines
             draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left", inset=(3, 4))
