@@ -79,7 +79,8 @@ def fill_delivery_receipt(data, template_path):
             
         # 3. Calculate alignment
         # Vertical center baseline approximation: y_mid + font_size * 0.35
-        y_pos = rect.y1 - ((rect.height - current_font_size) / 2) - 2
+        # Lift text up slightly more (change -2 to -6) to center vertically better
+        y_pos = rect.y1 - ((rect.height - current_font_size) / 2) - 6
         
         if align == "center":
             x_pos = rect.x0 + (rect.width - text_width) / 2
@@ -92,18 +93,18 @@ def fill_delivery_receipt(data, template_path):
     # Fill fields
     # Date (Top) - Anchor Y ~76
     date_rect = fitz.Rect(80, 74, 250, 90)
-    draw_text_in_rect(date_rect, data['date'], font_size=12)
+    draw_text_in_rect(date_rect, data['date'], font_size=14)
     
     # Consignee - Anchor Y ~160
     consignee_rect = fitz.Rect(115, 158, 400, 178)
-    draw_text_in_rect(consignee_rect, data['consignee'], font_size=12)
+    draw_text_in_rect(consignee_rect, data['consignee'], font_size=14)
     
     # Delivery Location - Anchor Y ~179
     location_rect = fitz.Rect(155, 177, 540, 193)
-    draw_text_in_rect(location_rect, data['delivery_location'], font_size=12)
+    draw_text_in_rect(location_rect, data['delivery_location'], font_size=14)
     
     # Date (Bottom) - Anchor Y ~648
-    date_bottom_rect = fitz.Rect(80, 646, 250, 666)
+    date_bottom_rect = fitz.Rect(140, 646, 310, 666)  # Shifted right to be clearer
     # For the bottom line, we want to center it over the line
     draw_text_in_rect(date_bottom_rect, data['date'], align="center", font_size=12)
     

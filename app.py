@@ -93,7 +93,8 @@ def fill_delivery_receipt(data, template_path, output_path):
             text_width = font.text_length(text, fontsize=current_font_size)
             
         # 3. Calculate alignment
-        y_pos = rect.y1 - ((rect.height - current_font_size) / 2) - 2
+        # Lift text up slightly more (change -2 to -6) to center vertically better
+        y_pos = rect.y1 - ((rect.height - current_font_size) / 2) - 6
         
         if align == "center":
             x_pos = rect.x0 + (rect.width - text_width) / 2
@@ -105,18 +106,18 @@ def fill_delivery_receipt(data, template_path, output_path):
     
     # 1. Replace the date at the top (after "Date: ")
     date_rect = fitz.Rect(80, 74, 250, 90)
-    draw_text_in_rect(date_rect, data['date'], font_size=12)
+    draw_text_in_rect(date_rect, data['date'], font_size=14)
     
     # 2. Replace the consignee (after "Consignee: ")
     consignee_rect = fitz.Rect(115, 158, 400, 178)
-    draw_text_in_rect(consignee_rect, data['consignee'], font_size=12)
+    draw_text_in_rect(consignee_rect, data['consignee'], font_size=14)
     
     # 3. Replace the delivery location (after "Delivery Location: ")
     location_rect = fitz.Rect(155, 177, 540, 193)
-    draw_text_in_rect(location_rect, data['delivery_location'], font_size=12)
+    draw_text_in_rect(location_rect, data['delivery_location'], font_size=14)
     
     # 4. Replace the date at the bottom (with underscores)
-    date_bottom_rect = fitz.Rect(80, 646, 250, 666)
+    date_bottom_rect = fitz.Rect(140, 646, 310, 666)  # Shifted right to be clearer
     # For the bottom line, we want to center it over the line
     draw_text_in_rect(date_bottom_rect, data['date'], align="center", font_size=12)
     
