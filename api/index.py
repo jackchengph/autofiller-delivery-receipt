@@ -92,19 +92,19 @@ def fill_delivery_receipt(data, template_path):
     
     # Fill fields
     # Date (Top) - Anchor Y ~76
-    date_rect = fitz.Rect(80, 74, 250, 90)
+    date_rect = fitz.Rect(80, 76, 250, 92)
     draw_text_in_rect(date_rect, data['date'], font_size=16)
     
     # Consignee - Anchor Y ~160
-    consignee_rect = fitz.Rect(115, 158, 400, 178)
+    consignee_rect = fitz.Rect(115, 163, 400, 183)
     draw_text_in_rect(consignee_rect, data['consignee'], font_size=16)
     
     # Delivery Location - Anchor Y ~179
-    location_rect = fitz.Rect(155, 177, 540, 193)
+    location_rect = fitz.Rect(155, 182, 540, 198)
     draw_text_in_rect(location_rect, data['delivery_location'], font_size=16)
     
     # Date (Bottom) - Anchor Y ~648
-    date_bottom_rect = fitz.Rect(140, 646, 310, 666)  # Shifted right to be clearer
+    date_bottom_rect = fitz.Rect(140, 671, 310, 691)  # Shifted right to be clearer
     # For the bottom line, we want to center it over the line
     draw_text_in_rect(date_bottom_rect, data['date'], align="center", font_size=14)
     

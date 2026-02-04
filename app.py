@@ -105,19 +105,19 @@ def fill_delivery_receipt(data, template_path, output_path):
         page.insert_text(text_point, text, fontname=font_name, fontsize=current_font_size, color=black)
     
     # 1. Replace the date at the top (after "Date: ")
-    date_rect = fitz.Rect(80, 74, 250, 90)
+    date_rect = fitz.Rect(80, 76, 250, 92)
     draw_text_in_rect(date_rect, data['date'], font_size=16)
     
     # 2. Replace the consignee (after "Consignee: ")
-    consignee_rect = fitz.Rect(115, 158, 400, 178)
+    consignee_rect = fitz.Rect(115, 163, 400, 183)
     draw_text_in_rect(consignee_rect, data['consignee'], font_size=16)
     
     # 3. Replace the delivery location (after "Delivery Location: ")
-    location_rect = fitz.Rect(155, 177, 540, 193)
+    location_rect = fitz.Rect(155, 182, 540, 198)
     draw_text_in_rect(location_rect, data['delivery_location'], font_size=16)
     
     # 4. Replace the date at the bottom (with underscores)
-    date_bottom_rect = fitz.Rect(140, 646, 310, 666)  # Shifted right to be clearer
+    date_bottom_rect = fitz.Rect(140, 671, 310, 691)  # Shifted right to be clearer
     # For the bottom line, we want to center it over the line
     draw_text_in_rect(date_bottom_rect, data['date'], align="center", font_size=14)
     
