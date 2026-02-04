@@ -43,27 +43,53 @@ def fill_delivery_receipt(data, template_path):
     white = fitz.pdfcolor["white"]
     black = fitz.pdfcolor["black"]
     font_name = "helv"
+    base_font_size = 10
     
-    def cover_and_write(rect, new_text, font_size=10):
+    def draw_text_in_rect(rect, text, align="left", font_size=10):
+        """Draw text in a rectangle with auto-scaling and alignment."""
+        # 1. Clear the area
         shape = page.new_shape()
         shape.draw_rect(rect)
         shape.finish(fill=white, color=white)
         shape.commit()
-        text_point = fitz.Point(rect.x0, rect.y1 - 2)
-        page.insert_text(text_point, new_text, fontname=font_name, fontsize=font_size, color=black)
+        
+        if not text:
+            return
+
+        # 2. Auto-scale font size
+        current_font_size = font_size
+        text_width = page.get_text_length(text, fontname=font_name, fontsize=current_font_size)
+        rect_width = rect.width - 4  # 2px padding on each side
+        
+        while text_width > rect_width and current_font_size > 6:
+            current_font_size -= 0.5
+            text_width = page.get_text_length(text, fontname=font_name, fontsize=current_font_size)
+            
+        # 3. Calculate alignment
+        # Vertical center baseline approximation: y_mid + font_size * 0.35
+        y_pos = rect.y1 - ((rect.height - current_font_size) / 2) - 2
+        
+        if align == "center":
+            x_pos = rect.x0 + (rect.width - text_width) / 2
+        else:  # left
+            x_pos = rect.x0 + 2  # Left padding
+            
+        text_point = fitz.Point(x_pos, y_pos)
+        page.insert_text(text_point, text, fontname=font_name, fontsize=current_font_size, color=black)
     
     # Fill fields
     date_rect = fitz.Rect(95, 108, 220, 126)
-    cover_and_write(date_rect, data['date'])
+    draw_text_in_rect(date_rect, data['date'])
     
     consignee_rect = fitz.Rect(130, 176, 400, 193)
-    cover_and_write(consignee_rect, data['consignee'])
+    draw_text_in_rect(consignee_rect, data['consignee'])
     
     location_rect = fitz.Rect(165, 191, 540, 208)
-    cover_and_write(location_rect, data['delivery_location'])
+    draw_text_in_rect(location_rect, data['delivery_location'])
     
     date_bottom_rect = fitz.Rect(72, 522, 220, 540)
-    cover_and_write(date_bottom_rect, f" ______{data['date']}_______ ")
+    # For the bottom line, we want to center it over the line
+    draw_text_in_rect(date_bottom_rect, data['date'], align="center")
     
     for i in range(5):  # Loop through all 5 possible rows
         row = TABLE_ROWS[i]
@@ -80,14 +106,17 @@ def fill_delivery_receipt(data, template_path):
         
         if i < len(data['items']):
             item = data['items'][i]
-            cover_and_write(desc_rect, f"{i + 1}. {item['description']}")
-            cover_and_write(qty_rect, item['quantity'])
-            cover_and_write(remarks_rect, item['remarks'])
+            # Description: Left aligned
+            draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left")
+            # Quantity: Centered
+            draw_text_in_rect(qty_rect, item['quantity'], align="center")
+            # Remarks: Left aligned
+            draw_text_in_rect(remarks_rect, item['remarks'], align="left")
         else:
-            # If no item, cover the original text (including row numbers like "4.", "5.")
-            cover_and_write(desc_rect, "")
-            cover_and_write(qty_rect, "")
-            cover_and_write(remarks_rect, "")
+            # If no item, clear
+            draw_text_in_rect(desc_rect, "")
+            draw_text_in_rect(qty_rect, "")
+            draw_text_in_rect(remarks_rect, "")
     
     # Save to bytes
     pdf_bytes = doc.tobytes()
