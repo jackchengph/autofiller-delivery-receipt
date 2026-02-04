@@ -20,17 +20,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ============ Delivery Receipt Filler Logic ============
 
 TABLE_ROWS = [
-    {'y_start': 276.9, 'y_end': 289.2},  # Row 1
-    {'y_start': 300.8, 'y_end': 313.1},  # Row 2
-    {'y_start': 324.7, 'y_end': 337.0},  # Row 3
-    {'y_start': 348.6, 'y_end': 360.9},  # Row 4
-    {'y_start': 372.5, 'y_end': 384.8},  # Row 5
+    {'y_start': 282, 'y_end': 306},  # Row 1
+    {'y_start': 306, 'y_end': 330},  # Row 2
+    {'y_start': 330, 'y_end': 354},  # Row 3
+    {'y_start': 354, 'y_end': 378},  # Row 4
+    {'y_start': 378, 'y_end': 402},  # Row 5
 ]
 
 TABLE_COLUMNS = {
-    'item_description': {'x_start': 95.25, 'x_end': 290},
-    'quantity': {'x_start': 306, 'x_end': 380},
-    'remarks': {'x_start': 389.25, 'x_end': 520}
+    'item_description': {'x_start': 25, 'x_end': 295},
+    'quantity': {'x_start': 300, 'x_end': 385},
+    'remarks': {'x_start': 390, 'x_end': 570}
 }
 
 
@@ -80,16 +80,20 @@ def fill_delivery_receipt(data, template_path):
         page.insert_text(text_point, text, fontname=font_name, fontsize=current_font_size, color=black)
     
     # Fill fields
-    date_rect = fitz.Rect(95, 108, 220, 126)
+    # Date (Top) - Anchor Y ~66-78
+    date_rect = fitz.Rect(55, 64, 200, 80)
     draw_text_in_rect(date_rect, data['date'])
     
-    consignee_rect = fitz.Rect(130, 176, 400, 193)
+    # Consignee - Anchor Y ~158-174
+    consignee_rect = fitz.Rect(100, 156, 400, 176)
     draw_text_in_rect(consignee_rect, data['consignee'])
     
-    location_rect = fitz.Rect(165, 191, 540, 208)
+    # Delivery Location - Anchor Y ~179-191
+    location_rect = fitz.Rect(130, 177, 540, 193)
     draw_text_in_rect(location_rect, data['delivery_location'])
     
-    date_bottom_rect = fitz.Rect(72, 522, 220, 540)
+    # Date (Bottom) - Anchor Y ~697-709
+    date_bottom_rect = fitz.Rect(60, 695, 230, 715)
     # For the bottom line, we want to center it over the line
     draw_text_in_rect(date_bottom_rect, data['date'], align="center")
     
