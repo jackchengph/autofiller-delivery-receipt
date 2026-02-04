@@ -47,11 +47,22 @@ def fill_delivery_receipt(data, template_path):
     base_font_size = 10
     font = fitz.Font(font_name)
     
-    def draw_text_in_rect(rect, text, align="left", font_size=10):
-        """Draw text in a rectangle with auto-scaling and alignment."""
-        # 1. Clear the area
+    def draw_text_in_rect(rect, text, align="left", font_size=10, inset=0):
+        """Draw text in a rectangle with auto-scaling and alignment.
+        inset: padding for the whiteout box to preserve borders (x, y) or single int"""
+        
+        # Handle inset
+        if isinstance(inset, int):
+            inset_x, inset_y = inset, inset
+        else:
+            inset_x, inset_y = inset
+            
+        # 1. Clear the area (with inset to preserve borders)
+        # Create a smaller rect for erasing
+        erase_rect = fitz.Rect(rect.x0 + inset_x, rect.y0 + inset_y, rect.x1 - inset_x, rect.y1 - inset_y)
+        
         shape = page.new_shape()
-        shape.draw_rect(rect)
+        shape.draw_rect(erase_rect)
         shape.finish(fill=white, color=white)
         shape.commit()
         
@@ -81,21 +92,22 @@ def fill_delivery_receipt(data, template_path):
     
     # Fill fields
     # Date (Top) - Anchor Y ~66-78
+    # Increased font_size to 12 and adjusted rect for alignment
     date_rect = fitz.Rect(55, 64, 200, 80)
-    draw_text_in_rect(date_rect, data['date'])
+    draw_text_in_rect(date_rect, data['date'], font_size=12)
     
     # Consignee - Anchor Y ~158-174
-    consignee_rect = fitz.Rect(100, 156, 400, 176)
-    draw_text_in_rect(consignee_rect, data['consignee'])
+    consignee_rect = fitz.Rect(90, 156, 400, 176)
+    draw_text_in_rect(consignee_rect, data['consignee'], font_size=12)
     
     # Delivery Location - Anchor Y ~179-191
-    location_rect = fitz.Rect(130, 177, 540, 193)
-    draw_text_in_rect(location_rect, data['delivery_location'])
+    location_rect = fitz.Rect(125, 177, 540, 193)
+    draw_text_in_rect(location_rect, data['delivery_location'], font_size=12)
     
     # Date (Bottom) - Anchor Y ~697-709
     date_bottom_rect = fitz.Rect(60, 695, 230, 715)
     # For the bottom line, we want to center it over the line
-    draw_text_in_rect(date_bottom_rect, data['date'], align="center")
+    draw_text_in_rect(date_bottom_rect, data['date'], align="center", font_size=12)
     
     for i in range(5):  # Loop through all 5 possible rows
         row = TABLE_ROWS[i]
@@ -112,17 +124,17 @@ def fill_delivery_receipt(data, template_path):
         
         if i < len(data['items']):
             item = data['items'][i]
-            # Description: Left aligned
-            draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left")
+            # Description: Let's inset 1px to avoid hitting grid lines
+            draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left", inset=1)
             # Quantity: Centered
-            draw_text_in_rect(qty_rect, item['quantity'], align="center")
+            draw_text_in_rect(qty_rect, item['quantity'], align="center", inset=1)
             # Remarks: Left aligned
-            draw_text_in_rect(remarks_rect, item['remarks'], align="left")
+            draw_text_in_rect(remarks_rect, item['remarks'], align="left", inset=1)
         else:
-            # If no item, clear
-            draw_text_in_rect(desc_rect, "")
-            draw_text_in_rect(qty_rect, "")
-            draw_text_in_rect(remarks_rect, "")
+            # If no item, clear. Important to inset to keep grid lines.
+            draw_text_in_rect(desc_rect, "", inset=1)
+            draw_text_in_rect(qty_rect, "", inset=1)
+            draw_text_in_rect(remarks_rect, "", inset=1)
     
     # Save to bytes
     pdf_bytes = doc.tobytes()

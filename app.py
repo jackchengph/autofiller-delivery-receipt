@@ -59,13 +59,24 @@ def fill_delivery_receipt(data, template_path, output_path):
     
     # Font settings
     font_name = "helv"  # Helvetica
+    font = fitz.Font(font_name)
     
     # Helper function to replace text area
-    def draw_text_in_rect(rect, text, align="left", font_size=10):
-        """Draw text in a rectangle with auto-scaling and alignment."""
-        # 1. Clear the area
+    def draw_text_in_rect(rect, text, align="left", font_size=10, inset=0):
+        """Draw text in a rectangle with auto-scaling and alignment.
+        inset: padding for the whiteout box to preserve borders (x, y) or single int"""
+        
+        # Handle inset
+        if isinstance(inset, int):
+            inset_x, inset_y = inset, inset
+        else:
+            inset_x, inset_y = inset
+            
+        # 1. Clear the area (with inset to preserve borders)
+        erase_rect = fitz.Rect(rect.x0 + inset_x, rect.y0 + inset_y, rect.x1 - inset_x, rect.y1 - inset_y)
+        
         shape = page.new_shape()
-        shape.draw_rect(rect)
+        shape.draw_rect(erase_rect)
         shape.finish(fill=white, color=white)
         shape.commit()
         
@@ -74,12 +85,12 @@ def fill_delivery_receipt(data, template_path, output_path):
 
         # 2. Auto-scale font size
         current_font_size = font_size
-        text_width = page.get_text_length(text, fontname=font_name, fontsize=current_font_size)
+        text_width = font.text_length(text, fontsize=current_font_size)
         rect_width = rect.width - 4  # 2px padding on each side
         
         while text_width > rect_width and current_font_size > 6:
             current_font_size -= 0.5
-            text_width = page.get_text_length(text, fontname=font_name, fontsize=current_font_size)
+            text_width = font.text_length(text, fontsize=current_font_size)
             
         # 3. Calculate alignment
         y_pos = rect.y1 - ((rect.height - current_font_size) / 2) - 2
@@ -125,17 +136,17 @@ def fill_delivery_receipt(data, template_path, output_path):
         
         if i < len(data['items']):
             item = data['items'][i]
-            # Description: Left aligned
-            draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left")
+            # Description: Let's inset 1px to avoid hitting grid lines
+            draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left", inset=1)
             # Quantity: Centered
-            draw_text_in_rect(qty_rect, item['quantity'], align="center")
+            draw_text_in_rect(qty_rect, item['quantity'], align="center", inset=1)
             # Remarks: Left aligned
-            draw_text_in_rect(remarks_rect, item['remarks'], align="left")
+            draw_text_in_rect(remarks_rect, item['remarks'], align="left", inset=1)
         else:
-            # If no item, clear
-            draw_text_in_rect(desc_rect, "")
-            draw_text_in_rect(qty_rect, "")
-            draw_text_in_rect(remarks_rect, "")
+            # If no item, clear. Important to inset to keep grid lines.
+            draw_text_in_rect(desc_rect, "", inset=1)
+            draw_text_in_rect(qty_rect, "", inset=1)
+            draw_text_in_rect(remarks_rect, "", inset=1)
     
     # Save the modified PDF
     doc.save(output_path)
