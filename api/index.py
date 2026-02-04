@@ -214,13 +214,40 @@ HTML_TEMPLATE = '''
             </div>
             <div class="form-group">
                 <label for="consignee">Consignee</label>
-                <input type="text" id="consignee" name="consignee" required>
+                <select id="consignee" name="consignee" required onchange="updateLocation()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <option value="" disabled selected>Select Consignee</option>
+                    <option value="The Clean Room">The Clean Room</option>
+                    <option value="Simula PH">Simula PH</option>
+                    <option value="9 Matters">9 Matters</option>
+                    <option value="Back to Basics">Back to Basics</option>
+                    <option value="EcoShoppe PH">EcoShoppe PH</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="delivery_location">Delivery Location</label>
-                <input type="text" id="delivery_location" name="delivery_location" required>
+                <input type="text" id="delivery_location" name="delivery_location" readonly required style="background-color: #e9ecef; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
         </div>
+
+        <script>
+            const locations = {
+                "The Clean Room": "Pick up",
+                "Simula PH": "Simula PH, Glorietta 2, Makati",
+                "9 Matters": "#25 Pearl St., Dona Juana Pasig City, Kalakhang Manila",
+                "Back to Basics": "30 Maginhawa, Diliman Quezon City",
+                "EcoShoppe PH": "Ecoshoppe PH, 883 Malaria Rd. Brgy. 185, N. Caloocan, 1427"
+            };
+
+            function updateLocation() {
+                const consignee = document.getElementById('consignee').value;
+                const locationInput = document.getElementById('delivery_location');
+                if (locations[consignee]) {
+                    locationInput.value = locations[consignee];
+                } else {
+                    locationInput.value = "";
+                }
+            }
+        </script>
 
         <div class="card">
             <h3>Items</h3>
