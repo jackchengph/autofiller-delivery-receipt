@@ -65,22 +65,29 @@ def fill_delivery_receipt(data, template_path):
     date_bottom_rect = fitz.Rect(72, 522, 220, 540)
     cover_and_write(date_bottom_rect, f" ______{data['date']}_______ ")
     
-    for i, item in enumerate(data['items'][:5]):  # Max 5 items
+    for i in range(5):  # Loop through all 5 possible rows
         row = TABLE_ROWS[i]
         y_top = row['y_start'] - 2
         y_bottom = row['y_end'] + 2
         
+        # Define rectangles for all three columns
         desc_rect = fitz.Rect(TABLE_COLUMNS['item_description']['x_start'], y_top,
                               TABLE_COLUMNS['item_description']['x_end'], y_bottom)
-        cover_and_write(desc_rect, f"{i + 1}. {item['description']}")
-        
         qty_rect = fitz.Rect(TABLE_COLUMNS['quantity']['x_start'], y_top,
                              TABLE_COLUMNS['quantity']['x_end'], y_bottom)
-        cover_and_write(qty_rect, item['quantity'])
-        
         remarks_rect = fitz.Rect(TABLE_COLUMNS['remarks']['x_start'], y_top,
                                  TABLE_COLUMNS['remarks']['x_end'], y_bottom)
-        cover_and_write(remarks_rect, item['remarks'])
+        
+        if i < len(data['items']):
+            item = data['items'][i]
+            cover_and_write(desc_rect, f"{i + 1}. {item['description']}")
+            cover_and_write(qty_rect, item['quantity'])
+            cover_and_write(remarks_rect, item['remarks'])
+        else:
+            # If no item, cover the original text (including row numbers like "4.", "5.")
+            cover_and_write(desc_rect, "")
+            cover_and_write(qty_rect, "")
+            cover_and_write(remarks_rect, "")
     
     # Save to bytes
     pdf_bytes = doc.tobytes()

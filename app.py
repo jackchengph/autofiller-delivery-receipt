@@ -91,38 +91,29 @@ def fill_delivery_receipt(data, template_path, output_path):
     date_with_underscores = f" ______{data['date']}_______ "
     cover_and_write(date_bottom_rect, date_with_underscores)
     
-    # 5. Replace items in the table
-    for i, item in enumerate(data['items'][:5]):  # Max 5 items
+    for i in range(5):  # Loop through all 5 possible rows
         row = TABLE_ROWS[i]
         y_top = row['y_start'] - 2
         y_bottom = row['y_end'] + 2
         
-        # Item description (with number prefix)
-        desc_rect = fitz.Rect(
-            TABLE_COLUMNS['item_description']['x_start'],
-            y_top,
-            TABLE_COLUMNS['item_description']['x_end'],
-            y_bottom
-        )
-        cover_and_write(desc_rect, f"{i + 1}. {item['description']}")
+        # Define rectangles for all three columns
+        desc_rect = fitz.Rect(TABLE_COLUMNS['item_description']['x_start'], y_top,
+                              TABLE_COLUMNS['item_description']['x_end'], y_bottom)
+        qty_rect = fitz.Rect(TABLE_COLUMNS['quantity']['x_start'], y_top,
+                             TABLE_COLUMNS['quantity']['x_end'], y_bottom)
+        remarks_rect = fitz.Rect(TABLE_COLUMNS['remarks']['x_start'], y_top,
+                                 TABLE_COLUMNS['remarks']['x_end'], y_bottom)
         
-        # Quantity
-        qty_rect = fitz.Rect(
-            TABLE_COLUMNS['quantity']['x_start'],
-            y_top,
-            TABLE_COLUMNS['quantity']['x_end'],
-            y_bottom
-        )
-        cover_and_write(qty_rect, item['quantity'])
-        
-        # Remarks
-        remarks_rect = fitz.Rect(
-            TABLE_COLUMNS['remarks']['x_start'],
-            y_top,
-            TABLE_COLUMNS['remarks']['x_end'],
-            y_bottom
-        )
-        cover_and_write(remarks_rect, item['remarks'])
+        if i < len(data['items']):
+            item = data['items'][i]
+            cover_and_write(desc_rect, f"{i + 1}. {item['description']}")
+            cover_and_write(qty_rect, item['quantity'])
+            cover_and_write(remarks_rect, item['remarks'])
+        else:
+            # If no item, cover the original text (including row numbers like "4.", "5.")
+            cover_and_write(desc_rect, "")
+            cover_and_write(qty_rect, "")
+            cover_and_write(remarks_rect, "")
     
     # Save the modified PDF
     doc.save(output_path)
