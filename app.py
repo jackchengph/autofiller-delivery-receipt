@@ -72,13 +72,13 @@ def fill_delivery_receipt(data, template_path, output_path):
         else:
             inset_x, inset_y = inset
             
-        # 1. Clear the area (with inset to preserve borders)
-        erase_rect = fitz.Rect(rect.x0 + inset_x, rect.y0 + inset_y, rect.x1 - inset_x, rect.y1 - inset_y)
-        
-        shape = page.new_shape()
-        shape.draw_rect(erase_rect)
-        shape.finish(fill=white, color=white)
-        shape.commit()
+        # 1. Clear the area (DISABLED for clean template to preserve grid lines)
+        # We only need to write text now since the template is blank.
+        # If we needed to erase, we would uncomment this:
+        # shape = page.new_shape()
+        # shape.draw_rect(erase_rect)
+        # shape.finish(fill=white, color=white)
+        # shape.commit()
         
         if not text:
             return
@@ -104,21 +104,21 @@ def fill_delivery_receipt(data, template_path, output_path):
         page.insert_text(text_point, text, fontname=font_name, fontsize=current_font_size, color=black)
     
     # 1. Replace the date at the top (after "Date: ")
-    date_rect = fitz.Rect(55, 64, 200, 80)
-    draw_text_in_rect(date_rect, data['date'])
+    date_rect = fitz.Rect(80, 74, 250, 90)
+    draw_text_in_rect(date_rect, data['date'], font_size=12)
     
     # 2. Replace the consignee (after "Consignee: ")
-    consignee_rect = fitz.Rect(100, 156, 400, 176)
-    draw_text_in_rect(consignee_rect, data['consignee'])
+    consignee_rect = fitz.Rect(115, 158, 400, 178)
+    draw_text_in_rect(consignee_rect, data['consignee'], font_size=12)
     
     # 3. Replace the delivery location (after "Delivery Location: ")
-    location_rect = fitz.Rect(130, 177, 540, 193)
-    draw_text_in_rect(location_rect, data['delivery_location'])
+    location_rect = fitz.Rect(155, 177, 540, 193)
+    draw_text_in_rect(location_rect, data['delivery_location'], font_size=12)
     
     # 4. Replace the date at the bottom (with underscores)
-    date_bottom_rect = fitz.Rect(60, 695, 230, 715)
+    date_bottom_rect = fitz.Rect(80, 646, 250, 666)
     # For the bottom line, we want to center it over the line
-    draw_text_in_rect(date_bottom_rect, data['date'], align="center")
+    draw_text_in_rect(date_bottom_rect, data['date'], align="center", font_size=12)
     
     # 5. Replace items in the table
     for i in range(5):  # Loop through all 5 possible rows

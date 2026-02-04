@@ -57,14 +57,13 @@ def fill_delivery_receipt(data, template_path):
         else:
             inset_x, inset_y = inset
             
-        # 1. Clear the area (with inset to preserve borders)
-        # Create a smaller rect for erasing
-        erase_rect = fitz.Rect(rect.x0 + inset_x, rect.y0 + inset_y, rect.x1 - inset_x, rect.y1 - inset_y)
-        
-        shape = page.new_shape()
-        shape.draw_rect(erase_rect)
-        shape.finish(fill=white, color=white)
-        shape.commit()
+        # 1. Clear the area (DISABLED for clean template to preserve grid lines)
+        # We only need to write text now since the template is blank.
+        # If we needed to erase, we would uncomment this:
+        # shape = page.new_shape()
+        # shape.draw_rect(erase_rect)
+        # shape.finish(fill=white, color=white)
+        # shape.commit()
         
         if not text:
             return
@@ -91,22 +90,20 @@ def fill_delivery_receipt(data, template_path):
         page.insert_text(text_point, text, fontname=font_name, fontsize=current_font_size, color=black)
     
     # Fill fields
-    # Date (Top) - Anchor Y ~66-78
-    # Increased font_size to 12 and adjusted rect for alignment
-    date_rect = fitz.Rect(55, 64, 200, 80)
+    # Date (Top) - Anchor Y ~76
+    date_rect = fitz.Rect(80, 74, 250, 90)
     draw_text_in_rect(date_rect, data['date'], font_size=12)
     
-    # Consignee - Anchor Y ~158-174
-    consignee_rect = fitz.Rect(90, 156, 400, 176)
+    # Consignee - Anchor Y ~160
+    consignee_rect = fitz.Rect(115, 158, 400, 178)
     draw_text_in_rect(consignee_rect, data['consignee'], font_size=12)
     
-    # Delivery Location - Anchor Y ~179-191
-    location_rect = fitz.Rect(125, 177, 540, 193)
+    # Delivery Location - Anchor Y ~179
+    location_rect = fitz.Rect(155, 177, 540, 193)
     draw_text_in_rect(location_rect, data['delivery_location'], font_size=12)
     
-    # Date (Bottom) - Adjust to cover "12/22/2025" text
-    # The image shows the date line is quite low, near the bottom edge
-    date_bottom_rect = fitz.Rect(60, 715, 230, 735)
+    # Date (Bottom) - Anchor Y ~648
+    date_bottom_rect = fitz.Rect(80, 646, 250, 666)
     # For the bottom line, we want to center it over the line
     draw_text_in_rect(date_bottom_rect, data['date'], align="center", font_size=12)
     
