@@ -124,18 +124,19 @@ def fill_delivery_receipt(data, template_path):
                                  TABLE_COLUMNS['remarks']['x_end'], y_bottom)
         
         if i < len(data['items']):
+        if i < len(data['items']):
             item = data['items'][i]
-            # Description: Let's inset more to avoid hitting grid lines
-            draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left", inset=(2, 1))
+            # Description: Inset x=3, y=4 to definitely avoid grid lines
+            draw_text_in_rect(desc_rect, f"{i + 1}. {item['description']}", align="left", inset=(3, 4))
             # Quantity: Centered
-            draw_text_in_rect(qty_rect, item['quantity'], align="center", inset=(2, 1))
+            draw_text_in_rect(qty_rect, item['quantity'], align="center", inset=(3, 4))
             # Remarks: Left aligned
-            draw_text_in_rect(remarks_rect, item['remarks'], align="left", inset=(2, 1))
+            draw_text_in_rect(remarks_rect, item['remarks'], align="left", inset=(3, 4))
         else:
             # If no item, clear. Important to inset to keep grid lines.
-            draw_text_in_rect(desc_rect, "", inset=(2, 1))
-            draw_text_in_rect(qty_rect, "", inset=(2, 1))
-            draw_text_in_rect(remarks_rect, "", inset=(2, 1))
+            draw_text_in_rect(desc_rect, "", inset=(3, 4))
+            draw_text_in_rect(qty_rect, "", inset=(3, 4))
+            draw_text_in_rect(remarks_rect, "", inset=(3, 4))
     
     # Save to bytes
     pdf_bytes = doc.tobytes()
